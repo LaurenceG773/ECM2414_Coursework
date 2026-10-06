@@ -1,19 +1,21 @@
 import jdk.jshell.spi.ExecutionControl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CardDeck
 {
-
-    public CardDeck()
+    ArrayList<Card> cards;
+    public CardDeck(Card[] startingCards)
     {
-        //import the cards, use a importCards()
+        this.cards = new ArrayList<>(Arrays.asList(startingCards));
     }
 
-    private Card[] importCards(String path) throws ExecutionControl.NotImplementedException
-    {
-        throw new ExecutionControl.NotImplementedException("input reading not done yet");
-    }
 
 
     //contains a struct of 4 cards to begin with,
@@ -37,6 +39,12 @@ public class CardDeck
         //place at the back of the queue
         // use add
     }
+
+    @Override
+    public String toString() {
+        return cards.toString();
+    }
+
 
 
 

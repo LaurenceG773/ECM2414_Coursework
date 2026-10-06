@@ -1,6 +1,8 @@
 import jdk.jshell.spi.ExecutionControl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Player
 {
@@ -8,9 +10,9 @@ public class Player
     private final CardDeck drawDeck;
     private final CardDeck discardDeck;
 
-    public Player(ArrayList<Card> dealtCards, CardDeck drawDeck, CardDeck discardDeck)
+    public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck)
     {
-        this.hand = dealtCards;
+        this.hand = new ArrayList<>(Arrays.asList(dealtCards));
         //references to the decks they are drawing and discarding to
         this.drawDeck = drawDeck;
         this.discardDeck = discardDeck;
@@ -35,6 +37,11 @@ public class Player
     public synchronized void saveState()
     {
         //write state to text file
+    }
+
+    @Override
+    public String toString() {
+        return hand.toString();
     }
 
 
