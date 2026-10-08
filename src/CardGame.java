@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +14,7 @@ public class CardGame
     public final int PLAYER_COUNT;
     private Player[] players;
     private CardDeck[] decks;
+    public volatile boolean gameOver = false;
     public record Result (CardDeck[] decks,Player[] players){}
 
     public  CardGame(int num_players,String path)
@@ -25,13 +25,27 @@ public class CardGame
         players = r.players;
         decks = r.decks;
 
-        for (int i = 0; i < PLAYER_COUNT; i++){
-            System.out.println("Player :" + players[i].toString());
-            System.out.println("Deck :" + decks[i].toString());
+        for (int i = 0; i < PLAYER_COUNT; i++)
+        {
+            System.out.println(players[i].toString());
+            System.out.println(decks[i].toString());
+
         }
         // get our decks in a row
         // pass decks in correct order
 
+    }
+
+    public synchronized void declareWin(int playerId){
+        if (!gameOver){
+            gameOver = true;
+            System.out.println("Player " + playerId + " has won.");
+        }
+    }
+
+    public boolean isGameOver()
+    {
+        return gameOver;
     }
 
 
@@ -58,16 +72,12 @@ public class CardGame
 
     public void start()
     {
-        //while nobody has won
-            //do a round
+
+
 
     }
 
-    private void doRound()
-    {
-        // do all the moves concurrently
-        // players.doTurn()
-    }
+
 
 
 
@@ -86,7 +96,7 @@ public class CardGame
         for (int i =0; i < PLAYER_COUNT; i++)
         {
             Card[] startingCards = Arrays.copyOfRange(cards, (i * 8) + 4, (i * 8) + 8);
-            outCardDecks[i] = new CardDeck(startingCards);
+            outCardDecks[i] = new CardDeck(startingCards,i);
         }
 
 

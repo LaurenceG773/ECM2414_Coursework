@@ -1,19 +1,22 @@
 import jdk.jshell.spi.ExecutionControl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CardDeck
 {
     ArrayList<Card> cards;
-    public CardDeck(Card[] startingCards)
+    private final int deckId;
+
+    public CardDeck(Card[] startingCards,int deckId)
     {
         this.cards = new ArrayList<>(Arrays.asList(startingCards));
+        this.deckId = deckId;
+    }
+
+    public int getDeckId()
+    {
+        return deckId;
     }
 
 
@@ -27,22 +30,25 @@ public class CardDeck
         //save to a sensible location
     }
 
-    public Card drawCard() throws ExecutionControl.NotImplementedException
+    public synchronized Card drawCard()
     {
-        //draw from front of the queue
-        // use reomove function throws no such element exception
-        throw new ExecutionControl.NotImplementedException("card drawing from deck not implemented");
+        if (!cards.isEmpty())
+        {
+            return cards.remove(0);
+        }
+        throw new RuntimeException("card Deck is empty");
+
     }
 
-    public void discardCard(Card card)
+    public synchronized void discardCardOnto(Card card)
     {
-        //place at the back of the queue
-        // use add
+        cards.add(card);
     }
 
     @Override
-    public String toString() {
-        return cards.toString();
+    public String toString()
+    {
+        return (getDeckId() + ":" + cards.toString());
     }
 
 
