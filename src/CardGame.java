@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class CardGame
@@ -14,7 +14,7 @@ public class CardGame
     public final int PLAYER_COUNT;
     private Player[] players;
     private CardDeck[] decks;
-    public volatile boolean gameOver = false;
+    public volatile AtomicBoolean gameOver = new AtomicBoolean(false);
     public record Result (CardDeck[] decks,Player[] players){}
 
     public  CardGame(int num_players,String path)
@@ -37,15 +37,15 @@ public class CardGame
     }
 
     public synchronized void declareWin(int playerId){
-        if (!gameOver){
-            gameOver = true;
+        if (!gameOver.get()){
+            gameOver.set(true);
             System.out.println("Player " + playerId + " has won.");
         }
     }
 
     public boolean isGameOver()
     {
-        return gameOver;
+        return gameOver.get();
     }
 
 
@@ -105,7 +105,7 @@ public class CardGame
             Card[] dealtCards = Arrays.copyOfRange(cards, i * 8, (i * 8) + 4);
             CardDeck drawDeckPointer = outCardDecks[(i - 1 + PLAYER_COUNT) % PLAYER_COUNT];
             CardDeck dumpDeckPointer = outCardDecks[i];
-            outPlayers[i] = new Player(dealtCards, drawDeckPointer, dumpDeckPointer);
+            outPlayers[i] = new Player(dealtCards, drawDeckPointer, dumpDeckPointer,this);
         }
 
 

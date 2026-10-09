@@ -9,9 +9,11 @@ public class Player implements Runnable
     private ArrayList<Card> hand;
     private final CardDeck drawDeck;
     private final CardDeck discardDeck;
+    private final CardGame game;
 
-    public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck)
+    public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck, CardGame game)
     {
+        this.game = game;
         this.hand = new ArrayList<>(Arrays.asList(dealtCards));
         //references to the decks they are drawing and discarding to
         this.drawDeck = drawDeck;
@@ -21,7 +23,13 @@ public class Player implements Runnable
     @Override
     public void run()
     {
-        if (hasWon()) {}
+        while(!game.isGameOver())
+
+        if (hasWon())
+        {
+            game.gameOver.set(true);
+        }
+
 
     }
 
