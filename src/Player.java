@@ -15,6 +15,7 @@ public class Player implements Runnable
     {
         this.game = game;
         this.hand = new ArrayList<>(Arrays.asList(dealtCards));
+
         //references to the decks they are drawing and discarding to
         this.drawDeck = drawDeck;
         this.discardDeck = discardDeck;
@@ -67,7 +68,7 @@ public class Player implements Runnable
 
     }
 
-    private synchronized boolean hasWon()
+    public synchronized boolean hasWon()
     {
         return hand.stream().allMatch(x -> x.getValue() == hand.getFirst().getValue());
     }
