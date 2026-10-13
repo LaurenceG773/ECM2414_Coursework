@@ -10,32 +10,37 @@ public class Player implements Runnable
     private final CardDeck drawDeck;
     private final CardDeck discardDeck;
     private final CardGame game;
+    private final int Id;
 
-    public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck, CardGame game)
+    public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck, CardGame game, int Id)
     {
         this.game = game;
         this.hand = new ArrayList<>(Arrays.asList(dealtCards));
         //references to the decks they are drawing and discarding to
         this.drawDeck = drawDeck;
         this.discardDeck = discardDeck;
+        this.Id = Id;
     }
 
     @Override
     public void run()
     {
+        System.out.println("Player " + Id + " has Started");
         while(!game.isGameOver())
-
-        if (hasWon())
         {
-            game.gameOver.set(true);
-        }
 
+            if (hasWon()) {
+                game.gameOver.set(true);
+            }
+
+            doTurn();
+        }
 
     }
 
     public  Card discardCard()
     {
-        //implement choice behaviour
+        //TODO implement choice behaviour
         return null;
     }
 
@@ -74,12 +79,12 @@ public class Player implements Runnable
 
     public synchronized void saveState()
     {
-        //write state to text file
+        //TODO  write state to text file
     }
 
     @Override
     public String toString() {
-        return hand.toString();
+        return ("Player " + Id + ": " + hand.toString());
     }
 
     public int getDrawDeckId(){
