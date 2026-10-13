@@ -54,17 +54,18 @@ public class Player implements Runnable
         CardDeck B = (drawDeck.getDeckId() < discardDeck.getDeckId()) ? discardDeck : drawDeck;
 
         //last player has to wait for the lower id (put down deck) before it can lock anything
+
+
         synchronized (A)
         {
             synchronized (B)
             {
+                if (game.isGameOver()){return;} //stops if the condion has changed while wating for the lock
                 Card drawnCard = drawDeck.drawCard();
                 hand.add(drawnCard);
-
-                hasWon();
-
                 discardDeck.discardCardOnto(discardCard());
 
+                //TODO saveState();
 
 
             }
