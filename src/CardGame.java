@@ -72,8 +72,15 @@ public class CardGame
 
     public void start()
     {
+        List<Thread> playerThreads = new ArrayList<>();
+        for (Player p : players)
+        {
+            Thread t = new Thread(p);
+            playerThreads.add(t);
+            t.start();
+        }
 
-
+        //TODO save to file at end
 
     }
 
@@ -82,9 +89,7 @@ public class CardGame
 
 
     //is called from main, the only class called from main
-    // round robin card drawing and dumping
 
-    //instanciates players
     // needs to evaluate winner by asking player.haswon()
 
     public Result deal(Card[] cards)
@@ -105,7 +110,7 @@ public class CardGame
             Card[] dealtCards = Arrays.copyOfRange(cards, i * 8, (i * 8) + 4);
             CardDeck drawDeckPointer = outCardDecks[(i - 1 + PLAYER_COUNT) % PLAYER_COUNT];
             CardDeck dumpDeckPointer = outCardDecks[i];
-            outPlayers[i] = new Player(dealtCards, drawDeckPointer, dumpDeckPointer,this, i);
+            outPlayers[i] = new Player(dealtCards, drawDeckPointer, dumpDeckPointer,this,i);
         }
 
 

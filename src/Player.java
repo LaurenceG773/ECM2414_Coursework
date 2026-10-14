@@ -13,40 +13,41 @@ public class Player implements Runnable
     private final CardDeck drawDeck;
     private final CardDeck discardDeck;
     private final CardGame game;
-    private final int playerNum;
     private final String fileName;
+    private final int Id;
 
-    public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck, CardGame game, int playerNum)
+    public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck, CardGame game, int Id)
     {
         this.game = game;
         this.hand = new ArrayList<>(Arrays.asList(dealtCards));
         //references to the decks they are drawing and discarding to
         this.drawDeck = drawDeck;
         this.discardDeck = discardDeck;
-
-        this.playerNum = playerNum;
+        this.Id = Id;
         //creates the txt file path for creating the file and later access to update it
-        this.fileName = "player" + this.playerNum + "_output.txt";
+        this.fileName = "player" + this.Id + "_output.txt";
         FileCreator();
-
     }
 
     @Override
     public void run()
     {
+        System.out.println("Player " + Id + " has Started");
         while(!game.isGameOver())
-
-        if (hasWon())
         {
-            game.gameOver.set(true);
-        }
 
+            if (hasWon()) {
+                game.gameOver.set(true);
+            }
+
+            doTurn();
+        }
 
     }
 
     public  Card discardCard()
     {
-        //implement choice behaviour
+        //TODO implement choice behaviour
         return null;
         //When discard card is finished, un-comment the next line
         //FileAppender("discard", discardedCard.getValue(), "to", discardDeck.getDeckId());
@@ -62,10 +63,13 @@ public class Player implements Runnable
         CardDeck B = (drawDeck.getDeckId() < discardDeck.getDeckId()) ? discardDeck : drawDeck;
 
         //last player has to wait for the lower id (put down deck) before it can lock anything
+
+
         synchronized (A)
         {
             synchronized (B)
             {
+                if (game.isGameOver()){return;} //stops if the condion has changed while wating for the lock
                 Card drawnCard = drawDeck.drawCard();
                 hand.add(drawnCard);
 
@@ -75,6 +79,7 @@ public class Player implements Runnable
 
                 discardDeck.discardCardOnto(discardCard());
 
+                //TODO saveState();
 
 
             }
@@ -89,12 +94,12 @@ public class Player implements Runnable
 
     public synchronized void saveState()
     {
-        //write state to text file
+        //TODO  write state to text file
     }
 
     @Override
     public String toString() {
-        return hand.toString();
+        return ("Player " + Id + ": " + hand.toString());
     }
 
     public int getDrawDeckId(){

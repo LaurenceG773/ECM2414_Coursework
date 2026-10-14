@@ -48,7 +48,7 @@ public class CardDeck
     @Override
     public String toString()
     {
-        return (getDeckId() + ":" + cards.toString());
+        return ("Deck " + getDeckId() + ":  " + cards.toString());
     }
 
 

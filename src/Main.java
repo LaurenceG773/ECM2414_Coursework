@@ -3,4 +3,5 @@
 void main()
 {
     var game = new CardGame(2, "four.txt");
+    game.start();
 }
