@@ -105,7 +105,7 @@ public class CardGame
             Card[] dealtCards = Arrays.copyOfRange(cards, i * 8, (i * 8) + 4);
             CardDeck drawDeckPointer = outCardDecks[(i - 1 + PLAYER_COUNT) % PLAYER_COUNT];
             CardDeck dumpDeckPointer = outCardDecks[i];
-            outPlayers[i] = new Player(dealtCards, drawDeckPointer, dumpDeckPointer,this);
+            outPlayers[i] = new Player(dealtCards, drawDeckPointer, dumpDeckPointer,this, i);
         }
 
 

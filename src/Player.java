@@ -1,8 +1,11 @@
 import jdk.jshell.spi.ExecutionControl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import java.io.FileWriter;
 
 public class Player implements Runnable
 {
@@ -10,14 +13,22 @@ public class Player implements Runnable
     private final CardDeck drawDeck;
     private final CardDeck discardDeck;
     private final CardGame game;
+    private final int playerNum;
+    private final String fileName;
 
-    public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck, CardGame game)
+    public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck, CardGame game, int playerNum)
     {
         this.game = game;
         this.hand = new ArrayList<>(Arrays.asList(dealtCards));
         //references to the decks they are drawing and discarding to
         this.drawDeck = drawDeck;
         this.discardDeck = discardDeck;
+
+        this.playerNum = playerNum;
+        //creates the txt file path for creating the file and later access to update it
+        this.fileName = "player" + this.playerNum + "_output.txt";
+        FileCreator();
+
     }
 
     @Override
@@ -37,6 +48,8 @@ public class Player implements Runnable
     {
         //implement choice behaviour
         return null;
+        //When discard card is finished, un-comment the next line
+        //FileAppender("discard", discardedCard.getValue(), "to", discardDeck.getDeckId());
     }
 
     //synchronized is done inside the function
@@ -55,6 +68,8 @@ public class Player implements Runnable
             {
                 Card drawnCard = drawDeck.drawCard();
                 hand.add(drawnCard);
+
+                FileAppender("draw", drawnCard.getValue(), "from", drawDeck.getDeckId());
 
                 hasWon();
 
@@ -89,6 +104,37 @@ public class Player implements Runnable
     public int getDiscardDeckId(){
         return discardDeck.getDeckId();
     }
+
+
+
+    public void FileCreator() {
+        try {
+            //Creates a txt file with the name in this.fileName
+            FileWriter txtWriter = new FileWriter(this.fileName);
+
+            //On creation, writes the starting hand to the file
+            txtWriter.write("Player " + this.playerNum + " starting deck is: " + this.hand);
+            txtWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error with creating the file for player " + this.playerNum + " occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public void FileAppender(String action, int card, String toOrFrom, int deckNum) {
+        try {
+            //Opens the txt file in append mode, hence the true
+            FileWriter txtAppender = new FileWriter(this.fileName, true);
+
+            //Could possibly format in anoyher way, but this follows how the specifications show their example
+            txtAppender.write("\nPlayer " + this.playerNum + " " + action +"s a " + card + toOrFrom + " deck " + deckNum);
+            txtAppender.close();
+        } catch (IOException e) {
+            System.out.println("An error with appending a " + action + " to the file for player " + this.playerNum + " occurred.");
+            e.printStackTrace();
+        }
+    }
+
 
 
 }
