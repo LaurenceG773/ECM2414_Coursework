@@ -2,5 +2,6 @@
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 void main()
 {
-    var game = new CardGame(2, "four.txt");
+    var game = new CardGame(2, "TwoPlayer.txt");
+    game.start();
 }

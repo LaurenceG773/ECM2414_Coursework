@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class CardDeck
 {
-    ArrayList<Card> cards;
+    private ArrayList<Card> cards;
     private final int deckId;
 
     public CardDeck(Card[] startingCards,int deckId)
@@ -48,7 +48,7 @@ public class CardDeck
     @Override
     public String toString()
     {
-        return (getDeckId() + ":" + cards.toString());
+        return ("Deck " + getDeckId() + ":  " + cards.toString());
     }
 
 
