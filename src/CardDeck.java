@@ -52,11 +52,10 @@ public class CardDeck
     }
 
 
-
-
-
-
-
+    public boolean isEmpty()
+    {
+        return cards.isEmpty();
+    }
 }
 
 

@@ -18,10 +18,10 @@ public class PlayerTest
     void hasWonCorrect()
     {
         Card[] cards1 = {new Card(1),new Card(1),new  Card(1),new Card(1)};
-        var player = new Player(cards1,null,null,null);
+        var player = new Player(cards1,null,null,null,1);
 
         Card[] cards2 = {new Card(2),new Card(1),new  Card(1),new Card(1)};
-        var player2 = new Player(cards2,null,null,null);
+        var player2 = new Player(cards2,null,null,null,2);
 
         assertEquals(player.hasWon(),true);
         assertEquals(player2.hasWon(),false);
