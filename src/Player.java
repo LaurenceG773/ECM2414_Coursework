@@ -15,6 +15,8 @@ public class Player implements Runnable
     private final String fileName;
     private final int Id;
 
+    enum Action {DRAW,DISCARD}
+
     public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck, CardGame game, int Id)
     {
         this.game = game;
@@ -60,7 +62,7 @@ public class Player implements Runnable
 
 
         //When discard card is finished, un-comment the next line
-        FileAppender("discard", discardedCard.getValue(), "to", discardDeck.getDeckId());
+        FileAppender(Action.DISCARD, discardedCard.getValue(), discardDeck.getDeckId());
         return discardedCard;
     }
 
@@ -81,15 +83,13 @@ public class Player implements Runnable
             synchronized (B)
             {
                 if (drawDeck.isEmpty()){return;}//stops if it cannot pick a card up
-                if (game.isGameOver()){return;} //stops if the condion has changed while wating for the lock
+                if (game.isGameOver()){return;} //stops if the condition has changed while waiting for the lock
                 Card drawnCard = drawDeck.drawCard();
                 hand.add(drawnCard);
 
-                FileAppender("draw", drawnCard.getValue(), "from", drawDeck.getDeckId());
-                System.out.println("Player" + Id + " drew " + drawnCard);
+                FileAppender(Action.DRAW, drawnCard.getValue(),drawDeck.getDeckId());
 
                 Card discardedCard = discardCard();
-                System.out.println("Player" + Id + " discards " + discardedCard);
                 discardDeck.discardCardOnto(discardedCard);
 
                 if (hasWon()) {
@@ -142,13 +142,16 @@ public class Player implements Runnable
         }
     }
 
-    public void FileAppender(String action, int card, String toOrFrom, int deckNum) {
+    public void FileAppender(Action action, int card, int deckNum) {
         try {
             //Opens the txt file in append mode, hence the true
             FileWriter txtAppender = new FileWriter(fileName, true);
 
             //Could possibly format in anoyher way, but this follows how the specifications show their example
-            txtAppender.write("\nPlayer " + Id + " " + action +"s a " + card + toOrFrom + " deck " + deckNum);
+            switch (action) {
+                case DISCARD -> txtAppender.write("\nPlayer " + Id + " " + "discard's a " + card + " to deck " + deckNum);
+                case DRAW -> txtAppender.write("\nPlayer " + Id + " " + "draw's a " + card + " from deck " + deckNum);
+            }
             txtAppender.close();
         } catch (IOException e) {
             System.out.println("An error with appending a " + action + " to the file for player " + Id + " occurred.");
