@@ -88,9 +88,13 @@ public class Player implements Runnable
                 FileAppender("draw", drawnCard.getValue(), "from", drawDeck.getDeckId());
                 System.out.println("Player" + Id + " drew " + drawnCard);
 
-                System.out.println("Player" + Id + " discards " + discardCard());
-                discardDeck.discardCardOnto(discardCard());
-                hasWon();
+                Card discardedCard = discardCard();
+                System.out.println("Player" + Id + " discards " + discardedCard);
+                discardDeck.discardCardOnto(discardedCard);
+
+                if (hasWon()) {
+                    game.gameOver.set(true);
+                }
                 //TODO saveState();
 
 
@@ -101,7 +105,7 @@ public class Player implements Runnable
 
     public synchronized boolean hasWon()
     {
-        return hand.stream().allMatch(x -> x.getValue() == hand.getFirst().getValue());
+        return  hand.stream().allMatch(x -> x.getValue() == hand.getFirst().getValue());
     }
 
     public synchronized void saveState()
