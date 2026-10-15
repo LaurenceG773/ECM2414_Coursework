@@ -4,7 +4,7 @@ import java.util.List;
 
 import java.util.Random;
 
-public class Player implements Runnable
+public class Player implements Runnable,Loggable
 {
     private final ArrayList<Card> hand;
     private final CardDeck drawDeck;
@@ -12,6 +12,11 @@ public class Player implements Runnable
     private final CardGame game;
     private final int Id;
 
+    @Override
+    public String getFilename()
+    {
+        return "player" + Id + "_output.txt";
+    }
 
 
     enum Action {DRAW,DISCARD}
@@ -27,7 +32,7 @@ public class Player implements Runnable
         this.Id = Id;
         //creates the txt file path for creating the file and later access to update it
 
-        Logger.FileCreator(this);
+        initSave();
     }
 
 
@@ -39,18 +44,42 @@ public class Player implements Runnable
         while(!game.isGameOver())
         {
 
-            if (hasWon()) {
-                game.gameOver.set(true);
+            if (hasWon()){
+                endGame();
             }
 
             doTurn();
         }
 
-        //TODO exit save
+        Logger.FileAppender(saveExit(),this);
 
     }
 
-    public  Card discardCard()
+    private void endGame()
+    {
+        game.gameOver.set(true);
+        game.winner = this;
+    }
+
+    private String saveExit()
+    {
+        StringBuilder outString = new StringBuilder();
+        if(this == game.winner)
+        {
+            outString.append("player " + Id + " wins \n");
+        }
+        else if (game.winner != null)
+        {
+            outString.append("player " + game.winner.getId() + " has informed player " + Id+ " that player " +game.winner.getId() + " has won \n");
+        }
+
+        outString.append("player " + Id + " exits\n");
+        outString.append(saveHand());
+        return outString.toString();
+    }
+
+
+    public Card discardCard()
     {
         List<Card> canDiscard = new ArrayList<>();
         for (Card card:hand)
@@ -96,7 +125,7 @@ public class Player implements Runnable
                 discardDeck.discardCardOnto(discardedCard);
 
                 if (hasWon()) {
-                    game.gameOver.set(true);
+                    endGame();
                 }
 
                 Logger.FileAppender(saveHand(),this);
@@ -112,7 +141,13 @@ public class Player implements Runnable
         return  hand.stream().allMatch(x -> x.getValue() == hand.getFirst().getValue());
     }
 
-    public synchronized String saveHand()
+    private synchronized void initSave()
+    {
+        Logger.FileCreator(this);
+        Logger.FileAppender("Player " + Id + " starting deck is: " + hand,this);
+    }
+
+    private synchronized String saveHand()
     {
         return ("Player " + Id +"'s current hand is " + hand.toString());
     }

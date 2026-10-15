@@ -3,7 +3,7 @@ import jdk.jshell.spi.ExecutionControl;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class CardDeck
+public class CardDeck implements Loggable
 {
     private ArrayList<Card> cards;
     private final int deckId;
@@ -25,9 +25,9 @@ public class CardDeck
 
     public synchronized void saveState()
     {
-        //check that state are all good
-
-        //save to a sensible location
+        if (cards.size() != 4){throw new RuntimeException("CardDeck has wrong size");}
+        Logger.FileCreator(this);
+        Logger.FileAppender(("deck " + deckId + " contents: " + cards.toString()),this);
     }
 
     public synchronized Card drawCard()
@@ -55,6 +55,12 @@ public class CardDeck
     public boolean isEmpty()
     {
         return cards.isEmpty();
+    }
+
+    @Override
+    public String getFilename()
+    {
+        return "deck" + deckId + "_output.txt";
     }
 }
 

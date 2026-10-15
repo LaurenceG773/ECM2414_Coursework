@@ -3,25 +3,23 @@ import java.io.IOException;
 
 public class Logger
 {
-    public static void FileCreator(Player player) {
+    public static void FileCreator(Loggable item) {
         try {
             //Creates a txt file with the name in this.fileName
-            FileWriter txtWriter = new FileWriter(filenameGenerator(player));
-
+            FileWriter txtWriter = new FileWriter(item.getFilename());
             //On creation, writes the starting hand to the file
-            txtWriter.write("Player " + player.getId() + " starting deck is: " + player.getHand() +"\n");
             txtWriter.close();
         } catch (IOException e) {
-            System.out.println("An error with creating the file for player " + player.getId() + " occurred.");
+            System.out.println("An error with creating the file " + item.getFilename());
             e.printStackTrace();
         }
     }
 
-    public static void FileAppender(String text,Player player)
+    public static void FileAppender(String text,Loggable item)
     {
         try {
             //Opens the txt file in append mode, hence the true
-            FileWriter txtAppender = new FileWriter(filenameGenerator(player), true);
+            FileWriter txtAppender = new FileWriter(item.getFilename(), true);
 
 
             txtAppender.write(text + "\n");
@@ -32,9 +30,7 @@ public class Logger
         }
     }
 
-    private static String filenameGenerator(Player player)
-    {
-        return "player" + player.getId() + "_output.txt";
-    }
+
 
 }
+

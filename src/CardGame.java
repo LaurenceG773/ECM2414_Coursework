@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +13,7 @@ public class CardGame
 {
 
     public final int PLAYER_COUNT;
+    public Player winner;
     private Player[] players;
     private CardDeck[] decks;
     public volatile AtomicBoolean gameOver = new AtomicBoolean(false);
@@ -80,7 +82,7 @@ public class CardGame
             t.start();
         }
 
-        //TODO save to file at end
+        for (CardDeck deck : decks){deck.saveState();}
 
     }
 
