@@ -1,3 +1,4 @@
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +13,7 @@ public class CardGame
 {
 
     public final int PLAYER_COUNT;
+    public Player winner;
     private Player[] players;
     private CardDeck[] decks;
     public volatile AtomicBoolean gameOver = new AtomicBoolean(false);
@@ -80,7 +82,7 @@ public class CardGame
             t.start();
         }
 
-        //TODO save to file at end
+        for (CardDeck deck : decks){deck.saveState();}
 
     }
 
@@ -100,14 +102,14 @@ public class CardGame
         //allways works out to 4 cards in the deck no matter the player count
         for (int i =0; i < PLAYER_COUNT; i++)
         {
-            Card[] startingCards = Arrays.copyOfRange(cards, (i * 8) + 4, (i * 8) + 8);
+            var startingCards = new Card[]{cards[4*PLAYER_COUNT+i],cards[4*PLAYER_COUNT + 1*PLAYER_COUNT + i],cards[4*PLAYER_COUNT + 2*PLAYER_COUNT + i],cards[4*PLAYER_COUNT + 3*PLAYER_COUNT + i]};
             outCardDecks[i] = new CardDeck(startingCards,i+1);
         }
 
 
         for (int i =0; i < PLAYER_COUNT; i++)
         {
-            Card[] dealtCards = Arrays.copyOfRange(cards, i * 8, (i * 8) + 4);
+            var dealtCards = new Card[]{cards[i],cards[1*PLAYER_COUNT + i],cards[2*PLAYER_COUNT + i],cards[3*PLAYER_COUNT + i]};
             CardDeck drawDeckPointer = outCardDecks[(i - 1 + PLAYER_COUNT) % PLAYER_COUNT];
             CardDeck dumpDeckPointer = outCardDecks[i];
             outPlayers[i] = new Player(dealtCards, drawDeckPointer, dumpDeckPointer,this,i+1);

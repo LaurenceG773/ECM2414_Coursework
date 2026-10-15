@@ -1,32 +1,41 @@
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import java.io.FileWriter;
 import java.util.Random;
 
-public class Player implements Runnable
+public class Player implements Runnable,Loggable
 {
-    private ArrayList<Card> hand;
+    private final ArrayList<Card> hand;
     private final CardDeck drawDeck;
     private final CardDeck discardDeck;
     private final CardGame game;
-    private final String fileName;
     private final int Id;
+
+    @Override
+    public String getFilename()
+    {
+        return "player" + Id + "_output.txt";
+    }
+
+
+    enum Action {DRAW,DISCARD}
 
     public Player(Card[] dealtCards, CardDeck drawDeck, CardDeck discardDeck, CardGame game, int Id)
     {
         this.game = game;
         this.hand = new ArrayList<>(Arrays.asList(dealtCards));
+
         //references to the decks they are drawing and discarding to
         this.drawDeck = drawDeck;
         this.discardDeck = discardDeck;
         this.Id = Id;
         //creates the txt file path for creating the file and later access to update it
-        this.fileName = "player" + this.Id + "_output.txt";
-        FileCreator();
+
+        initSave();
     }
+
+
 
     @Override
     public void run()
@@ -35,16 +44,42 @@ public class Player implements Runnable
         while(!game.isGameOver())
         {
 
-            if (hasWon()) {
-                game.gameOver.set(true);
+            if (hasWon()){
+                endGame();
             }
 
             doTurn();
         }
 
+        Logger.FileAppender(saveExit(),this);
+
     }
 
-    public  Card discardCard()
+    private void endGame()
+    {
+        game.gameOver.set(true);
+        game.winner = this;
+    }
+
+    private String saveExit()
+    {
+        StringBuilder outString = new StringBuilder();
+        if(this == game.winner)
+        {
+            outString.append("player " + Id + " wins \n");
+        }
+        else if (game.winner != null)
+        {
+            outString.append("player " + game.winner.getId() + " has informed player " + Id+ " that player " +game.winner.getId() + " has won \n");
+        }
+
+        outString.append("player " + Id + " exits\n");
+        outString.append(saveHand());
+        return outString.toString();
+    }
+
+
+    public Card discardCard()
     {
         List<Card> canDiscard = new ArrayList<>();
         for (Card card:hand)
@@ -53,13 +88,13 @@ public class Player implements Runnable
         }
 
         var r = new Random().nextInt(canDiscard.size());
+        //set discard card to var here did it twice by accident when printing earlier
         Card discardedCard = canDiscard.get(r);
         hand.remove(discardedCard);
 
 
-
         //When discard card is finished, un-comment the next line
-        FileAppender("discard", discardedCard.getValue(), "to", discardDeck.getDeckId());
+        Logger.FileAppender(saveAction(Action.DISCARD, discardedCard,discardDeck),this);
         return discardedCard;
     }
 
@@ -79,17 +114,21 @@ public class Player implements Runnable
         {
             synchronized (B)
             {
-                if (game.isGameOver()){return;} //stops if the condion has changed while wating for the lock
+                if (drawDeck.isEmpty()){return;}//stops if it cannot pick a card up
+                if (game.isGameOver()){return;} //stops if the condition has changed while waiting for the lock
                 Card drawnCard = drawDeck.drawCard();
                 hand.add(drawnCard);
 
-                FileAppender("draw", drawnCard.getValue(), "from", drawDeck.getDeckId());
+                Logger.FileAppender(saveAction(Action.DRAW, drawnCard,drawDeck),this);
 
+                Card discardedCard = discardCard();
+                discardDeck.discardCardOnto(discardedCard);
 
-                System.out.println(discardCard());
-                discardDeck.discardCardOnto(discardCard());
-                hasWon();
-                //TODO saveState();
+                if (hasWon()) {
+                    endGame();
+                }
+
+                Logger.FileAppender(saveHand(),this);
 
 
             }
@@ -97,15 +136,38 @@ public class Player implements Runnable
 
     }
 
-    private synchronized boolean hasWon()
+    public synchronized boolean hasWon()
     {
-        return hand.stream().allMatch(x -> x.getValue() == hand.getFirst().getValue());
+        return  hand.stream().allMatch(x -> x.getValue() == hand.getFirst().getValue());
     }
 
-    public synchronized void saveState()
+    private synchronized void initSave()
     {
-        //TODO  write state to text file
+        Logger.FileCreator(this);
+        Logger.FileAppender("Player " + Id + " starting deck is: " + hand,this);
     }
+
+    private synchronized String saveHand()
+    {
+        return ("Player " + Id +"'s current hand is " + hand.toString());
+    }
+
+    public synchronized String saveAction(Action action, Card card, CardDeck deck)
+    {
+        //Could possibly format in another way, but this follows how the specifications show their example
+        int deckNum = deck.getDeckId();
+        switch (action) {
+            case DISCARD -> {
+                return ("Player " + Id + " " + "discard's a " + card + " to deck " + deckNum);
+            }
+            case DRAW -> {
+                return ("Player " + Id + " " + "draw's a " + card + " from deck " + deckNum);
+            }
+        }
+
+        throw new RuntimeException("An error with appending a " + action + " to the file for player " + Id + " occurred.");
+
+}
 
     @Override
     public String toString() {
@@ -120,34 +182,14 @@ public class Player implements Runnable
         return discardDeck.getDeckId();
     }
 
-
-
-    public void FileCreator() {
-        try {
-            //Creates a txt file with the name in this.fileName
-            FileWriter txtWriter = new FileWriter(fileName);
-
-            //On creation, writes the starting hand to the file
-            txtWriter.write("Player " + Id + " starting deck is: " + hand);
-            txtWriter.close();
-        } catch (IOException e) {
-            System.out.println("An error with creating the file for player " + Id + " occurred.");
-            e.printStackTrace();
-        }
+    public String getHand()
+    {
+        return  hand.toString();
     }
 
-    public void FileAppender(String action, int card, String toOrFrom, int deckNum) {
-        try {
-            //Opens the txt file in append mode, hence the true
-            FileWriter txtAppender = new FileWriter(fileName, true);
-
-            //Could possibly format in anoyher way, but this follows how the specifications show their example
-            txtAppender.write("\nPlayer " + Id + " " + action +"s a " + card + toOrFrom + " deck " + deckNum);
-            txtAppender.close();
-        } catch (IOException e) {
-            System.out.println("An error with appending a " + action + " to the file for player " + Id + " occurred.");
-            e.printStackTrace();
-        }
+    public String getId()
+    {
+        return String.valueOf(Id);
     }
 
 
