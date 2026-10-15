@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public class CardDeck
 {
-    ArrayList<Card> cards;
+    private ArrayList<Card> cards;
     private final int deckId;
 
     public CardDeck(Card[] startingCards,int deckId)

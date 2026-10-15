@@ -118,10 +118,10 @@ public class Player implements Runnable
             FileWriter txtWriter = new FileWriter(this.fileName);
 
             //On creation, writes the starting hand to the file
-            txtWriter.write("Player " + this.playerNum + " starting deck is: " + this.hand);
+            txtWriter.write("Player " + Id + " starting deck is: " + hand);
             txtWriter.close();
         } catch (IOException e) {
-            System.out.println("An error with creating the file for player " + this.playerNum + " occurred.");
+            System.out.println("An error with creating the file for player " + Id + " occurred.");
             e.printStackTrace();
         }
     }
@@ -132,10 +132,10 @@ public class Player implements Runnable
             FileWriter txtAppender = new FileWriter(this.fileName, true);
 
             //Could possibly format in anoyher way, but this follows how the specifications show their example
-            txtAppender.write("\nPlayer " + this.playerNum + " " + action +"s a " + card + toOrFrom + " deck " + deckNum);
+            txtAppender.write("\nPlayer " + Id + " " + action +"s a " + card + toOrFrom + " deck " + deckNum);
             txtAppender.close();
         } catch (IOException e) {
-            System.out.println("An error with appending a " + action + " to the file for player " + this.playerNum + " occurred.");
+            System.out.println("An error with appending a " + action + " to the file for player " + Id + " occurred.");
             e.printStackTrace();
         }
     }
