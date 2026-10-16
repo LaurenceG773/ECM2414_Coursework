@@ -11,7 +11,7 @@ public class PlayerTest
     @BeforeEach
     public void Init()
     {
-
+        Logger.enabled(false);
     }
 
     @Test
@@ -26,6 +26,17 @@ public class PlayerTest
         assertEquals(player.hasWon(),true);
         assertEquals(player2.hasWon(),false);
     }
+
+    @Test
+    void doesDiscardChoice()
+    {
+        Card[] cards1 = {new Card(1),new Card(1),new  Card(1),new Card(3)};
+        var player = new Player(cards1,null,null,null,1);
+
+        var discardedCard = player.discardCard();
+        assertSame(3,discardedCard.getValue());
+    }
+
 
 
 

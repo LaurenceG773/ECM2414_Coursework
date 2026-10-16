@@ -93,8 +93,8 @@ public class Player implements Runnable,Loggable
         hand.remove(discardedCard);
 
 
-        //When discard card is finished, un-comment the next line
-        Logger.FileAppender(saveAction(Action.DISCARD, discardedCard,discardDeck),this);
+        //moved logging outside the function to stop it being logged if the function fails before returning
+
         return discardedCard;
     }
 
@@ -123,7 +123,7 @@ public class Player implements Runnable,Loggable
 
                 Card discardedCard = discardCard();
                 discardDeck.discardCardOnto(discardedCard);
-
+                Logger.FileAppender(saveAction(Action.DISCARD, discardedCard,discardDeck),this);
                 if (hasWon()) {
                     endGame();
                 }
@@ -155,19 +155,24 @@ public class Player implements Runnable,Loggable
     public synchronized String saveAction(Action action, Card card, CardDeck deck)
     {
         //Could possibly format in another way, but this follows how the specifications show their example
-        int deckNum = deck.getDeckId();
-        switch (action) {
-            case DISCARD -> {
-                return ("Player " + Id + " " + "discard's a " + card + " to deck " + deckNum);
+        try {
+            int deckNum = deck.getDeckId();
+            switch (action) {
+                case DISCARD -> {
+                    return ("Player " + Id + " " + "discard's a " + card + " to deck " + deckNum);
+                }
+                case DRAW -> {
+                    return ("Player " + Id + " " + "draw's a " + card + " from deck " + deckNum);
+                }
             }
-            case DRAW -> {
-                return ("Player " + Id + " " + "draw's a " + card + " from deck " + deckNum);
-            }
+        } catch (RuntimeException e)
+        {
+            throw new RuntimeException("An error with appending a " + action + " to the file for player " + Id + " occurred.");
         }
 
-        throw new RuntimeException("An error with appending a " + action + " to the file for player " + Id + " occurred.");
 
-}
+        return "";
+    }
 
     @Override
     public String toString() {

@@ -5,7 +5,16 @@ import java.nio.file.Path;
 
 public class Logger
 {
-    public static void FileCreator(Loggable item) {
+    private static boolean isEnabled = true;
+
+    public static void enabled(boolean in)
+    {
+        isEnabled = in;
+    }
+
+    public static void FileCreator(Loggable item)
+    {
+        if (!isEnabled){return;}
         try {
             //creates a directory for the output files to be put in
             Files.createDirectories(Path.of("Output_Files"));
@@ -20,21 +29,20 @@ public class Logger
         }
     }
 
-    public static void FileAppender(String text,Loggable item)
+    public static void FileAppender(String text, Loggable item)
     {
+        if(!isEnabled){return;}
         try {
             //Opens the txt file in append mode, hence the true
-            FileWriter txtAppender = new FileWriter("Output_Files/"+item.getFilename(), true);
+            FileWriter txtAppender = new FileWriter("Output_Files/" + item.getFilename(), true);
 
 
             txtAppender.write(text + "\n");
             txtAppender.close();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
 
 
 }

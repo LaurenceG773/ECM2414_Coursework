@@ -1,12 +1,11 @@
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CardDeckConcurrencyTest
+public class ConcurrencyTest
 {
 
 
