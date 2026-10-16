@@ -21,7 +21,15 @@ public class LoggerTests
     @AfterAll
     public static void removeDirectory() throws IOException
     {
-        if (Files.exists(folderpath)){}
+        if (Files.exists(folderpath))
+        {
+            var child = Files.walk(folderpath).toList();
+            child = child.reversed();
+            for(var path : child)
+            {
+                Files.delete(path);
+            }
+        }
     }
 
 
