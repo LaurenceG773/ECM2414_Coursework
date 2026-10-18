@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -19,7 +18,7 @@ public class CardGame
     public volatile AtomicBoolean gameOver = new AtomicBoolean(false);
     public record Result (CardDeck[] decks,Player[] players){}
 
-    public  CardGame(int num_players,String path)
+    public  CardGame(int num_players, Path path)
     {
         PLAYER_COUNT = num_players;
 
@@ -51,11 +50,11 @@ public class CardGame
     }
 
 
-    private Card[] importCards(String path)
+    private Card[] importCards(Path path)
     {
 
         List<Card> cards = new ArrayList<>();
-        try (BufferedReader r = Files.newBufferedReader(Path.of(path)))
+        try (BufferedReader r = Files.newBufferedReader(path))
         {
 
             String line;
