@@ -4,3 +4,8 @@ out/
 !**/src/test/**/out/
 .kotlin
 
+/Output_Files/deck1_output.txt
+/Output_Files/deck2_output.txt
+/Output_Files/player1_output.txt
+/Output_Files/player2_output.txt
+/Software_Development_Design_and_Process_Report.docx
