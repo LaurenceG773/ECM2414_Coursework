@@ -11,10 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LoggerTests
 {
-    private static Path folderpath = Path.of("Output_Files/Test_Files");
+    private static final Path folderpath = Path.of("Output_Files/Test_Files");
+
     @BeforeAll
     public static void createDirectory() throws IOException
     {
+        Logger.enabled(true);
         Files.createDirectories(folderpath);
     }
 
@@ -36,14 +38,7 @@ public class LoggerTests
     @Test
     public void DoesCreateFile()
     {
-        Logger.FileCreator(new Loggable()
-        {
-            @Override
-            public String getFilename()
-            {
-                return "Test_Files/Test_Write_File.txt";
-            }
-        });
+        Logger.FileCreator(() -> "Test_Files/Test_Write_File.txt");
 
         var txtpath = folderpath.resolve("Test_Write_File.txt");
         assertTrue(Files.exists(txtpath));
