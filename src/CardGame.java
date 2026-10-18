@@ -39,10 +39,11 @@ public class CardGame
 
     }
 
-    public synchronized void declareWin(int playerId){
+    public synchronized void declareWin(Player p){
         if (!gameOver.get()){
             gameOver.set(true);
-            System.out.println("Player " + playerId + " has won.");
+            winner = p;
+            System.out.println("Player " + p.getId() + " has won.");
         }
     }
 

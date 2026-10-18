@@ -57,8 +57,7 @@ public class Player implements Runnable,Loggable
 
     private void endGame()
     {
-        game.gameOver.set(true);
-        game.winner = this;
+        game.declareWin(this);
     }
 
     private String saveExit()
