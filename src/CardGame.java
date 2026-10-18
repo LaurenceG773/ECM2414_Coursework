@@ -1,7 +1,9 @@
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ public class CardGame
     public volatile AtomicBoolean gameOver = new AtomicBoolean(false);
     public record Result (CardDeck[] decks,Player[] players){}
 
-    public  CardGame(int num_players, Path path)
+    public  CardGame(int num_players, Path path) throws IOException
     {
         PLAYER_COUNT = num_players;
 
@@ -50,10 +52,11 @@ public class CardGame
     }
 
 
-    private Card[] importCards(Path path)
+    private Card[] importCards(Path path) throws IOException
     {
 
         List<Card> cards = new ArrayList<>();
+        //allows for much larger files
         try (BufferedReader r = Files.newBufferedReader(path))
         {
 
@@ -63,7 +66,9 @@ public class CardGame
                 cards.add(new Card(Integer.parseInt(line)));
             }
         }
-        catch (IOException e) {throw new RuntimeException(e);}
+        catch (NoSuchFileException e) {throw  new IOException("File not found " + path,e);}
+
+        catch (IOException e) {throw new  IOException("Could not read from " + path,e);}
 
         return cards.toArray(new Card[cards.size()]);
 
@@ -97,6 +102,10 @@ public class CardGame
     {
         Player[] outPlayers = new Player[PLAYER_COUNT];
         CardDeck[] outCardDecks = new CardDeck[PLAYER_COUNT];
+
+        if (cards.length != PLAYER_COUNT * 8){
+            throw new IllegalArgumentException("Expected " + PLAYER_COUNT*8 + " cards but found " +cards.length);
+        }
 
         //allways works out to 4 cards in the deck no matter the player count
         for (int i =0; i < PLAYER_COUNT; i++)

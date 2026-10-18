@@ -1,10 +1,11 @@
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Scanner;
 
 public class Main
 {
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         Scanner scanner = new Scanner(System.in);
 
@@ -12,7 +13,7 @@ public class Main
         var numPlayers = scanner.nextInt();
         scanner.nextLine();
 
-        System.out.print("Enter file path: ");
+        System.out.print("Enter file Path: ");
         var filename = scanner.nextLine();
 
         Path filePath = Path.of(filename);
