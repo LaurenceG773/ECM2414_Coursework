@@ -7,6 +7,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -37,6 +38,23 @@ public class CardGame
         // get our decks in a row
         // pass decks in correct order
 
+    }
+
+    public static void main(String[] args) throws IOException
+    {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter number of players: ");
+        var numPlayers = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Enter file Path: ");
+        var filename = scanner.nextLine();
+
+        Path filePath = Path.of(filename);
+
+        var game = new CardGame(numPlayers, filePath);
+        game.start();
     }
 
     public synchronized void declareWin(Player p){
